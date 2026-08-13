@@ -1,0 +1,76 @@
+name: Deploy Python & Gen AI Platform to Server VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Build & SSH Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Deploy to Server VM via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            set -e
+
+            echo "🚀 Starting automated deployment..."
+
+            # Navigate to project directory on server VM
+            if [ -d "/home/ubuntu/python-bootcamp" ]; then
+              cd /home/ubuntu/python-bootcamp
+            elif [ -d "/home/ubuntu/GenAI-Python-basics" ]; then
+              cd /home/ubuntu/GenAI-Python-basics
+            else
+              echo "Error: Project directory not found on VM."
+              exit 1
+            fi
+
+            echo "📥 Pulling latest code from GitHub main..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            # ── 1. Frontend Build & Deploy ────────────────────────────────────
+            echo "📦 Building React Frontend..."
+            cd client
+            npm install --include=dev
+            npm run build
+
+            WEB_ROOT="/var/www/python-bootcamp"
+            if [ ! -d "$WEB_ROOT" ]; then
+              WEB_ROOT="/var/www/GenAI-Python-basics"
+            fi
+
+            echo "📂 Copying static bundle to $WEB_ROOT..."
+            sudo cp -r dist/* "$WEB_ROOT/"
+            cd ..
+
+            # ── 2. Backend API Deploy via PM2 ─────────────────────────────────
+            echo "⚙️ Deploying Node.js Backend API..."
+            cd server
+            npm install --include=dev
+            
+            PM2_APP_NAME="python-bootcamp-api"
+            pm2 restart "$PM2_APP_NAME" || pm2 start index.js --name "$PM2_APP_NAME" --env production
+            pm2 save
+            cd ..
+
+            # ── 3. Reload Nginx ───────────────────────────────────────────────
+            echo "🔄 Reloading Nginx..."
+            sudo systemctl reload nginx
+
+            echo "✅ Deployment complete! Website updated successfully."
