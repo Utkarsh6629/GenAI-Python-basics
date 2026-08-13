@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Enables manual "Run workflow" button in GitHub Actions UI
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -31,15 +31,20 @@ jobs:
 
             echo "🚀 Starting automated deployment..."
 
-            # Navigate to project directory on server VM
-            if [ -d "/home/ubuntu/python-bootcamp" ]; then
-              cd /home/ubuntu/python-bootcamp
-            elif [ -d "/home/ubuntu/GenAI-Python-basics" ]; then
-              cd /home/ubuntu/GenAI-Python-basics
-            else
-              echo "Error: Project directory not found on VM."
-              exit 1
+            PROJECT_DIR="/home/ubuntu/python-bootcamp"
+            WEB_ROOT="/var/www/python-bootcamp"
+
+            # Auto-create directories & clone repo if missing on VM
+            if [ ! -d "$PROJECT_DIR" ]; then
+              echo "📁 Project directory not found on VM. Auto-cloning repository..."
+              cd /home/ubuntu
+              git clone https://github.com/Utkarsh6629/GenAI-Python-basics.git python-bootcamp
             fi
+
+            sudo mkdir -p "$WEB_ROOT"
+            sudo chown -R ubuntu:ubuntu "$WEB_ROOT" || true
+
+            cd "$PROJECT_DIR"
 
             echo "📥 Pulling latest code from GitHub main..."
             git fetch origin main
@@ -51,11 +56,6 @@ jobs:
             npm install --include=dev
             npm run build
 
-            WEB_ROOT="/var/www/python-bootcamp"
-            if [ ! -d "$WEB_ROOT" ]; then
-              WEB_ROOT="/var/www/GenAI-Python-basics"
-            fi
-
             echo "📂 Copying static bundle to $WEB_ROOT..."
             sudo cp -r dist/* "$WEB_ROOT/"
             cd ..
@@ -66,12 +66,20 @@ jobs:
             npm install --include=dev
             
             PM2_APP_NAME="python-bootcamp-api"
-            pm2 restart "$PM2_APP_NAME" || pm2 start index.js --name "$PM2_APP_NAME" --env production
-            pm2 save
+            if command -v pm2 &> /dev/null; then
+              pm2 restart "$PM2_APP_NAME" || pm2 start index.js --name "$PM2_APP_NAME" --env production
+              pm2 save
+            else
+              echo "ℹ️ PM2 not installed globally yet. Execute setup-deployment.sh on VM to configure PM2."
+            fi
             cd ..
 
             # ── 3. Reload Nginx ───────────────────────────────────────────────
-            echo "🔄 Reloading Nginx..."
-            sudo systemctl reload nginx
+            if command -v nginx &> /dev/null; then
+              echo "🔄 Reloading Nginx..."
+              sudo systemctl reload nginx || true
+            else
+              echo "ℹ️ Nginx not installed yet. Execute setup-deployment.sh on VM to configure Nginx & SSL."
+            fi
 
-            echo "✅ Deployment complete! Website updated successfully."
+            echo "✅ Deployment complete! Website code updated successfully."
