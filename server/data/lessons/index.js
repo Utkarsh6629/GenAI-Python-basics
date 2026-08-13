@@ -5,6 +5,7 @@ import { lesson4 } from "./lesson-4.js";
 import { lesson5 } from "./lesson-5.js";
 import { lesson6 } from "./lesson-6.js";
 import { lesson7 } from "./lesson-7.js";
+import { lesson8 } from "./lesson-8.js";
 
 // Full Course Curriculum Metadata Registry matching repository numbered folders
 export const lessonsMetadata = [
@@ -83,10 +84,10 @@ export const lessonsMetadata = [
     number: "08",
     title: "8-Class And Objects (OOP)",
     category: "Intermediate Track",
-    description: "Classes, Objects, Inheritance, Polymorphism, Encapsulation, Abstraction, Dunder Methods",
+    description: "Classes, Objects, Constructors (__init__), Inheritance, super(), Polymorphism, Encapsulation, Abstraction (ABC), Dunder Methods, Operator Overloading",
     duration: "75 mins",
     difficulty: "Intermediate",
-    status: "planned"
+    status: "available"
   },
   {
     id: 9,
@@ -187,7 +188,8 @@ const lessonDetailsMap = {
   4: lesson4,
   5: lesson5,
   6: lesson6,
-  7: lesson7
+  7: lesson7,
+  8: lesson8
 };
 
 export const getLessonById = (id) => {
