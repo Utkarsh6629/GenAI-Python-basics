@@ -1,0 +1,45 @@
+# Node.js dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Production build outputs
+dist/
+client/dist/
+build/
+client/build/
+
+# Logs & temp files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+server/app.log
+server/app1.log
+.env
+.env.local
+
+# Operating System & IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Repository Notebooks & Course Source Files (Gitignored for clean website deployment)
+1-Python Basics/
+2-Control Flow/
+3-Data Structures/
+4-Functions/
+5-Modules/
+6-File Handling/
+7-Exception Handling/
+8-Class And Objects/
+9-Advance Python Concepts/
+10-Data Analysis With Python/
+11-Working With Databases/
+12-Logging In Python/
+13-Flask/
+14-Streamlit/
+15-Memory Management/
+16-Multithreading and Multiprocessing/
+*.ipynb

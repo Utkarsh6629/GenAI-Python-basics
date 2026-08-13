@@ -1,0 +1,136 @@
+# Step-by-Step Deployment Plan for Python & Gen AI Learning Platform
+
+This document provides a clear, step-by-step deployment guide to deploy this website (**Full-Stack React + Node.js Express API**) to your Oracle Cloud / Ubuntu Linux VM.
+
+All 16+ notebook lesson folders have been added to `.gitignore` so your GitHub repository remains lightweight and focused purely on the Web Application code.
+
+---
+
+## 🏗️ Architecture Overview
+
+```mermaid
+flowchart TD
+    subgraph GitHub Repository
+        A[Git Push to main] --> B[GitHub Actions CI/CD]
+    end
+
+    subgraph Oracle Cloud Infrastructure (Ubuntu VM)
+        B -->|SSH Deployment| C[Pull Web Repo Code]
+        C --> D[Vite Build React Frontend]
+        D --> E[Copy Static Bundle to /var/www/python-bootcamp]
+        C --> F[Run Express API via PM2 on Port 5000]
+        E --> G[Nginx Web Server]
+        F --> H[API Proxy http://127.0.0.1:5000]
+        G -->|SSL Certificate| I[User Web Browser]
+    end
+```
+
+---
+
+## 📋 Pre-Deployment Checklist
+
+- [x] `.gitignore` configured to exclude lesson folders, `node_modules`, and build artifacts.
+- [x] Backend Express API ready in `server/` (Runs on port `5000`).
+- [x] Frontend React App ready in `client/` (Compiles via Vite).
+- [x] Automated one-time setup script ready: [`setup-deployment.sh`](file:///c:/Users/utkar/Desktop/cs/gen%20ai/Complete-Python-Bootcamp/setup-deployment.sh).
+
+---
+
+## 🚀 Step-by-Step Deployment Guide
+
+### Step 1: Push Web Application Code to GitHub
+
+In your local project terminal (`Complete-Python-Bootcamp`), run:
+
+```bash
+git add .
+git commit -m "Add full-stack React and Express platform code with setup script"
+git branch -M main
+git remote add origin https://github.com/<YourUsername>/python-genai-bootcamp.git
+git push -u origin main
+```
+
+*(Note: Lesson folders `1-Python Basics`, `2-Control Flow`, etc., are ignored by `.gitignore` and won't be pushed).*
+
+---
+
+### Step 2: Run One-Time Setup Script on your Server VM
+
+1. **SSH into your Ubuntu VM**:
+   ```bash
+   ssh -i /path/to/your-key.key ubuntu@<YOUR_VM_IP>
+   ```
+
+2. **Download or Clone the Setup Script**:
+   ```bash
+   cd /home/ubuntu
+   git clone https://github.com/<YourUsername>/python-genai-bootcamp.git python-bootcamp
+   cd python-bootcamp
+   ```
+
+3. **Execute the One-Time Automated Setup Script**:
+   ```bash
+   chmod +x setup-deployment.sh
+   ./setup-deployment.sh \
+     --name python-bootcamp \
+     --domain bootcamp.duckdns.org \
+     --repo https://github.com/<YourUsername>/python-genai-bootcamp.git \
+     --port 5000 \
+     --email your-email@example.com
+   ```
+
+#### What `setup-deployment.sh` Does Automatically:
+- Installs Node.js 22 LTS, PM2, Nginx, Certbot, UFW firewall.
+- Provisions `/var/www/python-bootcamp`.
+- Installs `client/` dependencies & builds Vite frontend.
+- Installs `server/` dependencies & starts backend process via PM2 (`python-bootcamp-api`).
+- Configures Nginx reverse proxy for `/` (Vite SPA) and `/api/` (Express API).
+- Issues free Let's Encrypt SSL certificate (`https://bootcamp.duckdns.org`).
+- Auto-generates `.github/workflows/deploy.yml` in your repo!
+
+---
+
+### Step 3: Set Up GitHub Repository Secrets for Automated CI/CD
+
+To enable automatic deployment whenever you push code updates to `main`:
+
+1. Open your GitHub Repository in a web browser.
+2. Go to **Settings** $\rightarrow$ **Secrets and variables** $\rightarrow$ **Actions**.
+3. Click **New repository secret** and add the following 3 secrets:
+
+| Secret Name | Value Example | Description |
+| :--- | :--- | :--- |
+| `VM_HOST` | `129.146.xxx.xxx` | Public IP address of your VM |
+| `VM_USER` | `ubuntu` | SSH login username |
+| `VM_SSH_KEY` | `-----BEGIN OPENSSH PRIVATE KEY-----...` | Contents of your private SSH key file |
+
+---
+
+### Step 4: Verify Deployment & Future Pushes
+
+1. **Test Live Website**:
+   Visit `https://bootcamp.duckdns.org` in your web browser.
+   - Verify React UI loads with HTTPS.
+   - Verify API connection by opening the Python Sandbox or running code.
+
+2. **Future Automated Updates**:
+   Any time you update the website code locally and run:
+   ```bash
+   git add .
+   git commit -m "Updated lesson or feature"
+   git push origin main
+   ```
+   GitHub Actions will automatically build the frontend, deploy static files, restart the backend via PM2, and reload Nginx in under 60 seconds!
+
+---
+
+## 🛠️ Server Management Commands
+
+If you ever need to inspect or manage your website process on the VM:
+
+- **Check Backend API Status**: `pm2 status`
+- **View Live Backend API Logs**: `pm2 logs python-bootcamp-api`
+- **Restart Backend API**: `pm2 restart python-bootcamp-api`
+- **Check Nginx Configuration**: `sudo nginx -t`
+- **Reload Nginx**: `sudo systemctl reload nginx`
+- **Inspect Nginx Error Logs**: `sudo tail -f /var/log/nginx/error.log`
