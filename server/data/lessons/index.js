@@ -6,6 +6,14 @@ import { lesson5 } from "./lesson-5.js";
 import { lesson6 } from "./lesson-6.js";
 import { lesson7 } from "./lesson-7.js";
 import { lesson8 } from "./lesson-8.js";
+import { lesson9 } from "./lesson-9.js";
+import { lesson10 } from "./lesson-10.js";
+import { lesson11 } from "./lesson-11.js";
+import { lesson12 } from "./lesson-12.js";
+import { lesson13 } from "./lesson-13.js";
+import { lesson14 } from "./lesson-14.js";
+import { lesson15 } from "./lesson-15.js";
+import { lesson16 } from "./lesson-16.js";
 
 // Full Course Curriculum Metadata Registry matching repository numbered folders
 export const lessonsMetadata = [
@@ -94,80 +102,80 @@ export const lessonsMetadata = [
     number: "09",
     title: "9-Advance Python Concepts",
     category: "Advanced Track",
-    description: "Iterators, Generators, Decorators, Closures, High-Performance Constructs",
+    description: "Iterators, Generators with yield, Memory-efficient streaming, Closures, Custom Function Decorators",
     duration: "55 mins",
     difficulty: "Advanced",
-    status: "planned"
+    status: "available"
   },
   {
     id: 10,
     number: "10",
     title: "10-Data Analysis With Python",
     category: "Data & AI Track",
-    description: "NumPy Arrays, Pandas DataFrames & Series, Data Cleaning, Matplotlib, Seaborn",
+    description: "NumPy Vectorized Arrays, Pandas Series & DataFrames, Data Cleaning, GroupBy Aggregations, Matplotlib & Seaborn",
     duration: "90 mins",
     difficulty: "Intermediate",
-    status: "planned"
+    status: "available"
   },
   {
     id: 11,
     number: "11",
     title: "11-Working With Databases",
     category: "Systems Track",
-    description: "SQLite3 Integration, SQL Queries, Tables, Cursors, DB Operations in Python",
+    description: "SQLite3 Architecture, Database Cursors, Parameterized CRUD Operations, SQL Injection Defense, ACID Transactions",
     duration: "45 mins",
     difficulty: "Intermediate",
-    status: "planned"
+    status: "available"
   },
   {
     id: 12,
     number: "12",
     title: "12-Logging In Python",
     category: "Systems Track",
-    description: "Log Levels (DEBUG, INFO, ERROR), Handlers, Formatters, Multiple Loggers",
+    description: "Log Severity Levels (DEBUG-CRITICAL), basicConfig, Dual Stream/File Handlers, Formatters, Exception Tracebacks",
     duration: "30 mins",
     difficulty: "Intermediate",
-    status: "planned"
+    status: "available"
   },
   {
     id: 13,
     number: "13",
     title: "13-Flask",
     category: "Web & API Track",
-    description: "Flask Web Server, Routing, Jinja2 Templates, Form Handling, REST APIs",
+    description: "Flask Microframework, Dynamic URL Parameters, Jinja2 Templates, Form Handling, Production RESTful JSON APIs",
     duration: "65 mins",
     difficulty: "Intermediate",
-    status: "planned"
+    status: "available"
   },
   {
     id: 14,
     number: "14",
     title: "14-Streamlit",
     category: "Web & AI Track",
-    description: "Data Apps, Widgets, Layouts, ML Model Interactive Prototypes",
+    description: "Streamlit Reactive Rerun Architecture, Input Widgets, CSV File Uploads, Real-Time Interactive ML Dashboards",
     duration: "45 mins",
     difficulty: "Intermediate",
-    status: "planned"
+    status: "available"
   },
   {
     id: 15,
     number: "15",
     title: "15-Memory Management",
     category: "Advanced Track",
-    description: "Reference Counting, Garbage Collector (gc), Memory Optimization",
+    description: "CPython Memory Model, sys.getrefcount, Circular Reference Detection, Generational Garbage Collection, __slots__",
     duration: "40 mins",
     difficulty: "Advanced",
-    status: "planned"
+    status: "available"
   },
   {
     id: 16,
     number: "16",
     title: "16-Multithreading and Multiprocessing",
     category: "Advanced Track",
-    description: "Threading, Multiprocessing, ThreadPoolExecutor, Concurrency vs Parallelism",
+    description: "Concurrency vs Parallelism, Python GIL, Threading for I/O, Multiprocessing for CPU Crunching, concurrent.futures",
     duration: "60 mins",
     difficulty: "Advanced",
-    status: "planned"
+    status: "available"
   },
   {
     id: 17,
@@ -189,7 +197,15 @@ const lessonDetailsMap = {
   5: lesson5,
   6: lesson6,
   7: lesson7,
-  8: lesson8
+  8: lesson8,
+  9: lesson9,
+  10: lesson10,
+  11: lesson11,
+  12: lesson12,
+  13: lesson13,
+  14: lesson14,
+  15: lesson15,
+  16: lesson16
 };
 
 export const getLessonById = (id) => {
